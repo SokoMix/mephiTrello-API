@@ -23,15 +23,15 @@ def verify_token(token):
 @routes_bp.route('/<user_id>/projects', methods=['GET'])
 @auth.login_required
 def getUserProjects(user_id):
-    # try:
-    if request.authorization.token == user_id and not db.checkUserIdUnique(user_id):
-        return dumps(db.getUserProjects(user_id))
-    else:
-        abort(400)
+    try:
+        if request.authorization.token == user_id and not db.checkUserIdUnique(user_id):
+            return dumps(db.getUserProjects(user_id))
+        else:
+            abort(400)
+            return "error"
+    except:
+        abort(404)
         return "error"
-    # except:
-    #     abort(404)
-    #     return "error"
 
 
 @routes_bp.route('/<project_id>/table', methods=['GET'])
