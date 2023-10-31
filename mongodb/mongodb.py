@@ -6,7 +6,7 @@ from pymongo.server_api import ServerApi
 
 
 class Database:
-    def __init__(self, host, port): # '127.0.0.1' 27017 for local run
+    def __init__(self, host, port):  # '127.0.0.1' 27017 for local run
         uri = "mongodb+srv://SokoMix:Dima_sokolov2004@mephitrello.rlkvyec.mongodb.net/?retryWrites=true&w=majority"
         self._client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=certifi.where())
         # self._client = MongoClient(host, port) local connection
@@ -20,9 +20,7 @@ class Database:
         tmp = list(dict(self._user.find_one({"user_id": user_id}))["projects"])
         projects = []
         for p_id in tmp:
-            tt1 = dict(self._project.find_one({"project_id": p_id}))
-            tt1.pop("_id", None)
-            projects.append(tt1)
+            projects.append(dict(self._project.find_one({"project_id": p_id}, {"_id": 0})))
         return {"projects": projects}
 
     def getProjectTable(self, project_id):
@@ -59,44 +57,44 @@ class Database:
 
     def addTask(self, data):
         self._task.insert_one(data)
-        self._column.update_one({"column_id" : data["column_id"]}, {"$push" : {"tasks" : data["task_id"]}})
+        self._column.update_one({"column_id": data["column_id"]}, {"$push": {"tasks": data["task_id"]}})
         pass
 
     def addProject(self, data):
         self._project.insert_one(data)
         for performer in data['performers']:
-            self._user.update_one({"user_id": performer}, {"$push" : {"projects" : data["project_id"]}})
+            self._user.update_one({"user_id": performer}, {"$push": {"projects": data["project_id"]}})
         self._user.update_one({"user_id": data["owner_id"]}, {"$push": {"projects": data["project_id"]}})
         pass
 
     def updateTask(self, task_id, data):
-        self._task.replace_one({'task_id' : task_id}, data)
+        self._task.replace_one({'task_id': task_id}, data)
         pass
 
     def updateColumn(self, column_id, data):
-        self._column.replace_one({'column_id' : column_id}, data)
+        self._column.replace_one({'column_id': column_id}, data)
         pass
 
     def deleteColumn(self, column_id):
         tasks = self._column.find_one({"column_id": column_id})['tasks']
         for task_id in tasks:
-            self._task.delete_one({"task_id" : task_id})
-        self._column.delete_one({"column_id" : column_id})
+            self._task.delete_one({"task_id": task_id})
+        self._column.delete_one({"column_id": column_id})
         pass
 
     def deleteTask(self, task_id):
-        self._task.delete_one({"task_id" : task_id})
-        self._column.update_one({"tasks" : {"$in": [task_id]}}, {'$pull' : {'tasks' : [task_id]}})
+        self._task.delete_one({"task_id": task_id})
+        self._column.update_one({"tasks": {"$in": [task_id]}}, {'$pull': {'tasks': [task_id]}})
         pass
 
     def deleteProject(self, project_id):
-        self._task.delete_many({"project_id" : project_id})
-        self._column.delete_many({"project_id" : project_id})
-        self._project.delete_one({"project_id" : project_id})
+        self._task.delete_many({"project_id": project_id})
+        self._column.delete_many({"project_id": project_id})
+        self._project.delete_one({"project_id": project_id})
         pass
 
     def updateUserInfo(self, user_id, data):
-        self._user.replace_one({"user_id" : user_id}, data)
+        self._user.replace_one({"user_id": user_id}, data)
         pass
 
     def checkProjectIdUnique(self, project_id):
@@ -132,7 +130,7 @@ class Database:
         return {"user_id": data["user_id"]}
 
     def findToken(self, token):
-        return len(list(self._user.find({"user_id" : token}))) >= 1
+        return len(list(self._user.find({"user_id": token}))) >= 1
 
     def registerUser(self, login, pswd, name):
         token = str(uuid.uuid4())
