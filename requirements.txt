@@ -3,3 +3,4 @@ certifi
 pymongo
 flask
 flask_httpauth
+gunicorn
