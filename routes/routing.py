@@ -24,7 +24,7 @@ def verify_token(token):
 @auth.login_required
 def getUserProjects(user_id):
     try:
-        if request.authorization['token'] == user_id and not db.checkUserIdUnique(user_id):
+        if request.authorization.token == user_id and not db.checkUserIdUnique(user_id):
             return dumps(db.getUserProjects(user_id))
         else:
             abort(400)
@@ -275,7 +275,7 @@ def updateUserInfo(user_id):
         if data['password'] is None or not (type(data['password']) is str):
             abort(400)
         data['user_id'] = user_id
-        if user_id == request.authorization['token']:
+        if user_id == request.authorization.token:
             db.updateUserInfo(user_id, data)
         else:
             abort(401)
