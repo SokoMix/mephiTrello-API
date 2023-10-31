@@ -23,7 +23,6 @@ def verify_token(token):
 @routes_bp.route('/<user_id>/projects', methods=['GET'])
 @auth.login_required
 def getUserProjects(user_id):
-    time.sleep(10)
     try:
         if request.authorization.token == user_id and not db.checkUserIdUnique(user_id):
             return dumps(db.getUserProjects(user_id))
