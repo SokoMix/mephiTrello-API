@@ -20,7 +20,9 @@ class Database:
         tmp = list(dict(self._user.find_one({"user_id": user_id}))["projects"])
         projects = []
         for p_id in tmp:
-            projects.append(self._project.find_one({"project_id": p_id},{"_id":0}))
+            tt1 = dict(self._project.find_one({"project_id": p_id}))
+            tt1.pop("_id", None)
+            projects.append(tt1)
         return {"projects": projects}
 
     def getProjectTable(self, project_id):
