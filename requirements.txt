@@ -1,6 +1,6 @@
 uuid
 certifi
 pymongo
-flask
-flask_httpauth
+flask=3.0.0
+flask_httpauth=4.8.0
 gunicorn
