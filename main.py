@@ -1,4 +1,4 @@
-from flask import Flask, request, abort
+from flask import Flask
 
 from routes.routing import routes_bp
 

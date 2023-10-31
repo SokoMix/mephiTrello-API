@@ -1,0 +1,8 @@
+uuid
+certifi
+pymongo
+time
+flask
+flask_httpauth
+json
+mongodb

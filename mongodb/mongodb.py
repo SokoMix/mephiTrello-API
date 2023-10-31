@@ -1,11 +1,15 @@
 import uuid
 
+import certifi
 from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 
 
 class Database:
     def __init__(self, host, port): # '127.0.0.1' 27017 for local run
-        self._client = MongoClient(host, port)
+        uri = "mongodb+srv://SokoMix:Dima_sokolov2004@mephitrello.rlkvyec.mongodb.net/?retryWrites=true&w=majority"
+        self._client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=certifi.where())
+        # self._client = MongoClient(host, port) local connection
         self._db = self._client['task']
         self._task = self._db['task']
         self._user = self._db['user']
