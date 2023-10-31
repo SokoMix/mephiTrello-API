@@ -3,4 +3,3 @@ certifi
 pymongo
 flask
 flask_httpauth
-mongodb
