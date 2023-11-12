@@ -36,8 +36,8 @@ class Database:
         tasks = list(self._task.find({
             "project_id": project_id,
             "deadline": {
-                "$gt": date - 1,
-                "$lt": date + 86400
+                "$gt": date - 1000,
+                "$lt": date + 86400000,
             },
             "performers": {
                 "$in": [user_id]
