@@ -58,7 +58,7 @@ def getTasksForDate(user_id, project_id, date):
 @auth.login_required
 def addColumn(project_id):
     try:
-        data = dict(loads(request.headers.get('column')))
+        data = loads(request.data)['column']
         if data['column_id'] is None or not (type(data['column_id']) is str):
             abort(400)
         if data['project_id'] is None or not (type(data['project_id']) is str) or project_id != data['project_id']:
@@ -84,7 +84,7 @@ def addColumn(project_id):
 @auth.login_required
 def addTask(project_id, column_id):
     try:
-        data = loads(request.headers.get('task'))
+        data = loads(request.data)['task']
         if data['name'] is None or not (type(data['name']) is str):
             abort(400)
         if data['column_id'] is None or not (type(data['column_id']) is str) or data['column_id'] != column_id:
@@ -99,11 +99,11 @@ def addTask(project_id, column_id):
             abort(400)
         if 'deadline' not in data.keys():
             data['deadline'] = None
-        elif not (type(data['deadline']) is int):
+        elif not (type(data['deadline']) is int) and not data['deadline'] is None:
             abort(400)
         if 'description' not in data.keys():
             data['description'] = None
-        elif not (type(data['description']) is str):
+        elif not (type(data['description']) is str) and not data['description'] is None:
             abort(400)
         if db.checkTaskIdUnique(data['task_id']):
             db.addTask(data)
@@ -117,14 +117,14 @@ def addTask(project_id, column_id):
 @routes_bp.route('/addUser', methods=['POST'])
 def addUser():
     try:
-        data = loads(request.headers.get('user'))
+        data = loads(request.data)['user']
         if data['name'] is None or not (type(data['name']) is str):
             abort(400)
         if data['login'] is None or not (type(data['login']) is str):
             abort(400)
         if data['password'] is None or not (type(data['password']) is str):
             abort(400)
-        db.registerUser(data["login"], data["password"], data["name"])
+        return db.registerUser(data["login"], data["password"], data["name"])
     except:
         abort(400)
     return 'ok'
@@ -134,7 +134,7 @@ def addUser():
 @auth.login_required
 def addProject(user_id):
     try:
-        data = dict(loads(request.headers.get('project')))
+        data = loads(request.data)['project']
         if data['project_id'] is None or not (type(data['project_id']) is str):
             abort(400)
         if data['owner_id'] is None or not (type(data['owner_id']) is str) or user_id != data['owner_id']:
@@ -157,7 +157,7 @@ def addProject(user_id):
 @auth.login_required
 def updateTask(project_id, task_id):
     try:
-        data = loads(request.headers.get('task'))
+        data = loads(request.data)['task']
         if data['name'] is None or not (type(data['name']) is str):
             abort(400)
         if data['column_id'] is None or not (type(data['column_id']) is str):
@@ -191,7 +191,7 @@ def updateTask(project_id, task_id):
 @auth.login_required
 def updateColumn(project_id, column_id):
     try:
-        data = dict(loads(request.headers.get('column')))
+        data = loads(request.data)['column']
         if data['column_id'] is None or not (type(data['column_id']) is str):
             abort(400)
         if data['project_id'] is None or not (type(data['project_id']) is str) or project_id != data['project_id']:
@@ -231,7 +231,7 @@ def deleteColumn(project_id, column_id):
 @routes_bp.route('/loginUser', methods=['GET'])
 def loginUser():
     try:
-        data = dict(loads(request.headers.get('user')))
+        data = loads(request.data)['user']
         return db.loginUser(data["login"], data["password"])
     except:
         abort(404)
@@ -267,7 +267,7 @@ def deleteProject(project_id):
 @auth.login_required
 def updateUserInfo(user_id):
     try:
-        data = loads(request.headers.get('user'))
+        data = loads(request.data)['user']
         if data['name'] is None or not (type(data['name']) is str):
             abort(400)
         if data['login'] is None or not (type(data['login']) is str):

@@ -9,7 +9,7 @@ class Database:
     def __init__(self, host, port):  # '127.0.0.1' 27017 for local run
         uri = "mongodb+srv://SokoMix:Dima_sokolov2004@mephitrello.rlkvyec.mongodb.net/?retryWrites=true&w=majority"
         self._client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=certifi.where())
-        # self._client = MongoClient(host, port) local connection
+        # self._client = MongoClient(host, port) # local connection
         self._db = self._client['task']
         self._task = self._db['task']
         self._user = self._db['user']
@@ -84,13 +84,14 @@ class Database:
 
     def deleteTask(self, task_id):
         self._task.delete_one({"task_id": task_id})
-        self._column.update_one({"tasks": {"$in": [task_id]}}, {'$pull': {'tasks': [task_id]}})
+        self._column.update_one({"tasks": {"$in": [task_id]}}, {'$pull': {'tasks': task_id}})
         pass
 
     def deleteProject(self, project_id):
         self._task.delete_many({"project_id": project_id})
         self._column.delete_many({"project_id": project_id})
         self._project.delete_one({"project_id": project_id})
+        self._user.update_many({"projects": {"$in": [project_id]}}, {'$pull': {'projects': project_id}})
         pass
 
     def updateUserInfo(self, user_id, data):
@@ -126,8 +127,8 @@ class Database:
             return True
 
     def loginUser(self, login, pswd):
-        data = dict(self._user.find_one({"login": login, "password": pswd}))
-        return {"user_id": data["user_id"]}
+        data = dict(self._user.find_one({"login": login, "password": pswd}, {"_id": 0}))
+        return {"user": data}
 
     def findToken(self, token):
         return len(list(self._user.find({"user_id": token}))) >= 1
@@ -141,4 +142,10 @@ class Database:
             "user_id": token,
             "projects": []
         })
-        return {"user_id": token}
+        return {"user": {
+            "login": login,
+            "password": pswd,
+            "name": name,
+            "user_id": token,
+            "projects": []
+        }}
