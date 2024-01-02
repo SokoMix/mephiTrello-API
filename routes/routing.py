@@ -1,4 +1,5 @@
-import time
+import random
+import uuid
 
 from flask import Blueprint, request, abort
 from flask_httpauth import HTTPTokenAuth
@@ -137,9 +138,7 @@ def addProject(user_id):
         data = loads(request.data)['project']
         if data['project_id'] is None or not (type(data['project_id']) is str):
             abort(400)
-        if data['owner_id'] is None or not (type(data['owner_id']) is str) or user_id != data['owner_id']:
-            abort(400)
-        if data['color'] is None or not (type(data['color']) is int):
+        if data['owner_id'] is None or not (type(data['owner_id']) is str):
             abort(400)
         if data['name'] is None or not (type(data['name']) is str):
             abort(400)
@@ -147,6 +146,20 @@ def addProject(user_id):
             data['performers'] = []
         elif not (type(data['performers']) is list):
             abort(400)
+        pool = [
+            0xFAAE69,  # оранжевый
+            0xC85656,  # красный
+            0x68CB58,  # зеленый
+            0x5886CB,  # синий
+            0xA674D8,  # фиолетовый
+            0xC669C2,  # розовый
+            0x66ADBD,  # голубой
+            0x7B8045,  # цвет травы
+        ]
+        color_index = random.randint(0, 8)
+        data['color'] = pool[color_index]
+        data['project_id'] = str(uuid.uuid4())
+        data['owner_id'] = str(user_id)
         db.addProject(data)
     except:
         abort(400)
